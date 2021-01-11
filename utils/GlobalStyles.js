@@ -21,8 +21,6 @@ export default StyleSheet.create({
   imagebox: {
     flex: 1,
     alignContent: 'center',
-    width: '100%',
-    height: '100%',
   },
   image: {
     flex: 1,
