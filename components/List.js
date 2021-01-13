@@ -25,7 +25,7 @@ const mediaArray = [
   },
   {
     key: '2',
-    title: 'Title 3',
+    title: 'Roberto',
     description:
       'Phasellus imperdiet nunc tincidunt molestie vestibulum. Donec dictum suscipit nibh. Sed vel velit ante. Aenean quis viverra magna. Praesent eget cursus urna. Ut rhoncus interdum dolor non tincidunt. Sed vehicula consequat facilisis. Pellentesque pulvinar sem nisl, ac vestibulum erat rhoncus id. ',
     thumbnails: {
