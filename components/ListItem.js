@@ -3,6 +3,8 @@ import {View, Text, TouchableOpacity, Image} from 'react-native';
 import PropTypes from 'prop-types';
 import GlobalStyles from '../utils/GlobalStyles';
 
+const uploadUrl = 'http://media.mw.metropolia.fi/wbma/uploads/';
+
 const ListItem = (props) => {
   return (
     <TouchableOpacity style={GlobalStyles.container}>
@@ -10,7 +12,7 @@ const ListItem = (props) => {
         <View style={GlobalStyles.imagebox}>
           <Image
             style={GlobalStyles.image}
-            source={{uri: props.singleMedia.thumbnails.w160}}
+            source={{uri: uploadUrl + props.singleMedia.thumbnails.w160}}
           />
         </View>
         <View style={GlobalStyles.textbox}>
