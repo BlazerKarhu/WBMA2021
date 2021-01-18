@@ -5,7 +5,6 @@ import {uploadsUrl} from '../utils/variables';
 
 const Single = ({route}) => {
   const {file} = route.params;
-  console.log(file);
   return (
     <SafeAreaView style={styles.container}>
       <Text>{file.title}</Text>

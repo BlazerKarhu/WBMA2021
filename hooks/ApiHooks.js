@@ -8,7 +8,7 @@ const useLoadMedia = () => {
     try {
       const response = await fetch(baseUrl + 'media?limit=' + limit);
       const json = await response.json();
-      console.log('response json data', json);
+      // console.log('response json data', json);
 
       const media = await Promise.all(
         json.map(async (item) => {
@@ -18,7 +18,7 @@ const useLoadMedia = () => {
           return json;
         })
       );
-      console.log('media array data', media);
+      // console.log('media array data', media);
 
       setMediaArray(media);
     } catch (error) {
