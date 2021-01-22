@@ -1,5 +1,12 @@
 import React, {useContext, useEffect} from 'react';
-import {View} from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -33,15 +40,35 @@ const Login = ({navigation}) => {
   }, []);
 
   return (
-    <View style={GlobalStyles.container}>
-      <LoginForm navigation={navigation} />
-      <RegisterForm navigation={navigation} />
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
+          <View style={GlobalStyles.container}>
+            <LoginForm navigation={navigation} />
+            <RegisterForm navigation={navigation} />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 Login.propTypes = {
   navigation: PropTypes.object,
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  inner: {
+    padding: 24,
+    flex: 1,
+    justifyContent: 'space-around',
+  },
+});
 
 export default Login;
