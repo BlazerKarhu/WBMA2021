@@ -5,8 +5,9 @@ import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = ({navigation}) => {
-  const [isLoggedIn, setIsLoggedIn] = useContext(MainContext);
-  console.log('profile', isLoggedIn);
+  const {isLoggedIn, setIsLoggedIn, user} = useContext(MainContext);
+  console.log('profile is logged in?', isLoggedIn);
+  console.log('profile user data', user);
   const logout = async () => {
     setIsLoggedIn(false);
     await AsyncStorage.clear();
@@ -14,8 +15,10 @@ const Profile = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Profile</Text>
-      <Button title={'logout'} onPress={logout}></Button>
+      <Text style={styles.text}>Profile</Text>
+      <Text style={styles.text}>Name: {user.username}</Text>
+      <Text style={styles.text}>Email: {user.email}</Text>
+      <Button style={styles.button} title={'logout'} onPress={logout}></Button>
     </SafeAreaView>
   );
 };
@@ -26,7 +29,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 40,
+  },
+  text: {
+    margin: 2,
+    fontSize: 20,
+  },
+  button: {
+    padding: 10,
+    margin: 20,
+    position: 'relative',
   },
 });
 Profile.propTypes = {

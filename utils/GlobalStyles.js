@@ -14,6 +14,8 @@ export default StyleSheet.create({
     borderRadius: 7,
     padding: 15,
     elevation: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     height: 150,
@@ -77,5 +79,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'green',
+  },
+  loginFormInput: {
+    height: 100,
+    flex: 1,
   },
 });
