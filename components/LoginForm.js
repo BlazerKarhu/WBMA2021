@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
-import {Alert, Button, Text, View} from 'react-native';
+import {Alert, View} from 'react-native';
+import {Text, Button} from 'react-native-elements';
 import PropTypes from 'prop-types';
 import FormTextInput from './FormTextInput';
 import useLogInForm from '../hooks/LoginHooks';
@@ -10,13 +11,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const LoginForm = ({navigation}) => {
   const {inputs, handleInputChange} = useLogInForm();
   const {postLogin} = useLogin();
-  const {setIsLoggedIn} = useContext(MainContext);
+  const {setUser, setIsLoggedIn} = useContext(MainContext);
 
   const doLogin = async () => {
     try {
       const userData = await postLogin(inputs);
       console.log('doLogin ok', userData.message);
       Alert.alert(userData.message);
+      setUser(userData.user);
       setIsLoggedIn(true);
       await AsyncStorage.setItem('userToken', userData.token);
     } catch (error) {
@@ -27,7 +29,9 @@ const LoginForm = ({navigation}) => {
 
   return (
     <View>
-      <Text>Login</Text>
+      <Text style={{textAlign: 'center'}} h3>
+        Login
+      </Text>
       <FormTextInput
         autoCapitalize="none"
         placeholder="username"

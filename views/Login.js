@@ -1,25 +1,26 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useLogin} from '../hooks/ApiHooks';
+import {useUser} from '../hooks/ApiHooks';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
-import GlobalStyles from '../utils/GlobalStyles';
+import {StyleSheet} from 'react-native';
+import {Button, Card, Text} from 'react-native-elements';
 
 const Login = ({navigation}) => {
   const {isLoggedIn, setIsLoggedIn, setUser} = useContext(MainContext);
+  const [formToggle, setFormToggle] = useState(true);
   console.log('isloggedIn?', isLoggedIn);
   // props is needed for navigation
-  const {checkToken} = useLogin();
+  const {checkToken} = useUser();
 
   const getToken = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
@@ -41,15 +42,27 @@ const Login = ({navigation}) => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <View style={GlobalStyles.container}>
-            <LoginForm navigation={navigation} />
-            <RegisterForm navigation={navigation} />
-          </View>
+        <View style={styles.form}>
+          {formToggle ? (
+            <Card>
+              <LoginForm navigation={navigation} />
+            </Card>
+          ) : (
+            <Card>
+              <RegisterForm navigation={navigation} />
+            </Card>
+          )}
+          <Text>{formToggle ? 'no account?' : 'Already have account?'}</Text>
+          <Button
+            title={formToggle ? 'Register' : 'Login'}
+            onPress={() => {
+              setFormToggle(!formToggle);
+            }}
+          />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -63,12 +76,14 @@ Login.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
   },
-  inner: {
-    padding: 24,
+  appTitle: {
     flex: 1,
-    justifyContent: 'space-around',
+  },
+  form: {
+    flex: 4,
+    justifyContent: 'center',
   },
 });
-
 export default Login;

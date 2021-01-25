@@ -1,30 +1,27 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image} from 'react-native';
 import PropTypes from 'prop-types';
-import GlobalStyles from '../utils/GlobalStyles';
 import {uploadsUrl} from '../utils/variables';
+import {ListItem as RNEListItem, Avatar} from 'react-native-elements';
 
 const ListItem = ({navigation, singleMedia}) => {
   return (
-    <TouchableOpacity
-      style={GlobalStyles.container}
+    <RNEListItem
+      bottomDivider
       onPress={() => {
         navigation.navigate('Single', {file: singleMedia});
       }}
     >
-      <View style={GlobalStyles.card}>
-        <View style={GlobalStyles.imagebox}>
-          <Image
-            style={GlobalStyles.image}
-            source={{uri: uploadsUrl + singleMedia.thumbnails.w160}}
-          />
-        </View>
-        <View style={GlobalStyles.textbox}>
-          <Text style={GlobalStyles.title}>{singleMedia.title}</Text>
-          <Text>{singleMedia.description}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+      <Avatar
+        size="large"
+        square
+        source={{uri: uploadsUrl + singleMedia.thumbnails.w160}}
+      ></Avatar>
+      <RNEListItem.Content>
+        <RNEListItem.Title h4>{singleMedia.title}</RNEListItem.Title>
+        <RNEListItem.Subtitle>{singleMedia.description}</RNEListItem.Subtitle>
+      </RNEListItem.Content>
+      <RNEListItem.Chevron />
+    </RNEListItem>
   );
 };
 ListItem.propTypes = {

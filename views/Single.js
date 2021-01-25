@@ -1,29 +1,25 @@
 import React from 'react';
-import {StyleSheet, SafeAreaView, Text, Image} from 'react-native';
+import {SafeAreaView} from 'react-native';
+import {Text, Card} from 'react-native-elements';
 import PropTypes from 'prop-types';
 import {uploadsUrl} from '../utils/variables';
 
 const Single = ({route}) => {
   const {file} = route.params;
   return (
-    <SafeAreaView style={styles.container}>
-      <Text>{file.title}</Text>
-      <Image
-        source={{uri: uploadsUrl + file.filename}}
-        style={{width: '90%', height: '80%'}}
-        resizeMode="contain"
-      />
+    <SafeAreaView>
+      <Card>
+        <Card.Image
+          source={{uri: uploadsUrl + file.filename}}
+          style={{width: '100%', height: '80%'}}
+          resizeMode="contain"
+        />
+        <Text h4>{file.title}</Text>
+        <Text> {file.description} </Text>
+      </Card>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-});
 
 Single.propTypes = {
   route: PropTypes.object,
