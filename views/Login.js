@@ -1,8 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
   Keyboard,
-  KeyboardAvoidingView,
-  Platform,
+  // KeyboardAvoidingView,
+  // Platform,
+  ScrollView,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -41,10 +42,11 @@ const Login = ({navigation}) => {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <ScrollView>
+      {/* <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >*/}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.form}>
           {formToggle ? (
@@ -65,7 +67,8 @@ const Login = ({navigation}) => {
           />
         </View>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      {/* </KeyboardAvoidingView>*/}
+    </ScrollView>
   );
 };
 

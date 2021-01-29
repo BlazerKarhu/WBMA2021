@@ -8,28 +8,42 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {MainContext} from '../contexts/MainContext';
 
 const RegisterForm = ({navigation}) => {
-  const {loading, setLoading} = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [loading, setLoading] = useState(false);
   const {setIsLoggedIn, setUser} = useContext(MainContext);
-  const {inputs, handleInputChange} = useSignUpForm();
+  const {
+    inputs,
+    handleInputChange,
+    handleInputEnd,
+    checkUserAvailable,
+    registerErrors,
+    validateOnSend,
+  } = useSignUpForm();
   const {postRegister} = useUser();
   const {postLogin} = useLogin();
 
   const doRegister = async () => {
     setLoading(true);
-    try {
-      const result = await postRegister(inputs);
-      console.log('doRegister ok', result.message);
-      Alert.alert(result.message);
-      // automatic login after register
-      const userData = await postLogin(inputs);
-      await AsyncStorage.setItem('userToken', userData.token);
-      setIsLoggedIn(true);
-      setUser(userData.user);
-      setLoading(false);
-    } catch (error) {
-      console.log('Registration error', error.message);
-      Alert.alert('Registration failed', error.message);
-      setLoading(false);
+    if (!validateOnSend()) {
+      Alert.alert('Input validation failed');
+      console.log('validateOnSend failed');
+      return;
+    } else {
+      delete inputs.confirmPassword;
+      try {
+        const result = await postRegister(inputs);
+        console.log('doRegister ok', result.message);
+        Alert.alert(result.message);
+        // automatic login after register
+        const userData = await postLogin(inputs);
+        await AsyncStorage.setItem('userToken', userData.token);
+        setIsLoggedIn(true);
+        setUser(userData.user);
+      } catch (error) {
+        console.log('Registration error', error.message);
+        Alert.alert('Registration failed', error.message);
+        setLoading(false);
+      }
     }
   };
 
@@ -43,26 +57,50 @@ const RegisterForm = ({navigation}) => {
         placeholder="username"
         onChangeText={(txt) => handleInputChange('username', txt)}
         onEndEditing={(event) => {
-          console.log(event.nativeEvent.text);
+          checkUserAvailable(event);
+          handleInputEnd('username', event.nativeEvent.text);
         }}
+        errorMessage={registerErrors.username}
       />
       <Input
         autoCapitalize="none"
         placeholder="password"
         onChangeText={(txt) => handleInputChange('password', txt)}
         secureTextEntry={true}
+        onEndEditing={(event) => {
+          handleInputEnd('password', event.nativeEvent.text);
+        }}
+        errorMessage={registerErrors.password}
+      />
+      <Input
+        autoCapitalize="none"
+        placeholder="confirm password"
+        onChangeText={(txt) => handleInputChange('confirmPassword', txt)}
+        secureTextEntry={true}
+        onEndEditing={(event) => {
+          handleInputEnd('confirmPassword', event.nativeEvent.text);
+        }}
+        errorMessage={registerErrors.confirmPassword}
       />
       <Input
         autoCapitalize="none"
         placeholder="email"
         onChangeText={(txt) => handleInputChange('email', txt)}
+        onEndEditing={(event) => {
+          handleInputEnd('email', event.nativeEvent.text);
+        }}
+        errorMessage={registerErrors.email}
       />
       <Input
         autoCapitalize="none"
         placeholder="full name"
         onChangeText={(txt) => handleInputChange('full_name', txt)}
+        onEndEditing={(event) => {
+          handleInputEnd('full_name', event.nativeEvent.text);
+        }}
+        errorMessage={registerErrors.full_name}
       />
-      {<Button loading={loading} title="Register!" onPress={doRegister} />}
+      {<Button title="Register!" onPress={doRegister} />}
     </View>
   );
 };

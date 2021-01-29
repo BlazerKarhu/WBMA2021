@@ -11,13 +11,12 @@ const Profile = ({navigation}) => {
   const {isLoggedIn, setIsLoggedIn, user} = useContext(MainContext);
   const [avatar, setAvatar] = useState('http://placekitten.com/620');
   const {getFilesByTag} = useTag();
+  console.log('profile is logged in?', isLoggedIn);
+  console.log('profile user data', user);
   const logout = async () => {
     setIsLoggedIn(false);
     await AsyncStorage.clear();
-    if (!isLoggedIn) {
-      // this is to make sure isLoggedIn has changed, will be removed later
-      navigation.navigate('Login');
-    }
+    navigation.navigate('Login');
   };
 
   useEffect(() => {

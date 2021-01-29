@@ -20,24 +20,22 @@ const doFetch = async (url, options = {}) => {
 const useLoadMedia = () => {
   const [mediaArray, setMediaArray] = useState([]);
 
-  const loadMedia = async (limit = 10) => {
+  const loadMedia = async (limit = 5) => {
     try {
-      const json = await doFetch(baseUrl + 'media?limit=' + limit);
+      const listJson = await doFetch(baseUrl + 'media?limit=' + limit);
       const media = await Promise.all(
-        json.map(async (item) => {
-          const response = await fetch(baseUrl + 'media/' + item.file_id);
-          const json = await response.json();
-          return json;
+        listJson.map(async (item) => {
+          const fileJson = await doFetch(baseUrl + 'media/' + item.file_id);
+          return fileJson;
         })
       );
       setMediaArray(media);
     } catch (error) {
-      console.error('loadMedia error', error);
+      console.error('loadMedia error', error.message);
     }
   };
-
   useEffect(() => {
-    loadMedia(15);
+    loadMedia(10);
   }, []);
   return mediaArray;
 };
@@ -50,25 +48,14 @@ const useLogin = () => {
       body: JSON.stringify(userCredentials),
     };
     try {
-      const userData = await doFetch(baseUrl + 'login/', options);
+      const userData = await doFetch(baseUrl + 'login', options);
       return userData;
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error('postLogin error: ' + error.message);
     }
   };
-  return {postLogin};
-};
 
-const useTag = () => {
-  const getFilesByTag = async (tag) => {
-    try {
-      const tagList = await doFetch(baseUrl + 'tags/' + tag);
-      return tagList;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
-  return {getFilesByTag};
+  return {postLogin};
 };
 
 const useUser = () => {
@@ -91,11 +78,11 @@ const useUser = () => {
   };
 
   const checkToken = async (token) => {
-    const options = {
-      method: 'GET',
-      headers: {'x-access-token': token},
-    };
     try {
+      const options = {
+        method: 'GET',
+        headers: {'x-access-token': token},
+      };
       const userData = await doFetch(baseUrl + 'users/user', options);
       return userData;
     } catch (error) {
@@ -113,6 +100,18 @@ const useUser = () => {
   };
 
   return {postRegister, checkToken, checkIsUserAvailable};
+};
+
+const useTag = () => {
+  const getFilesByTag = async (tag) => {
+    try {
+      const tagList = await doFetch(baseUrl + 'tags/' + tag);
+      return tagList;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+  return {getFilesByTag};
 };
 
 export {useLoadMedia, useLogin, useUser, useTag};
