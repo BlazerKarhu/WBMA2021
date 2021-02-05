@@ -1,5 +1,7 @@
-import {useEffect, useState} from 'react';
-import {baseUrl} from '../utils/variables';
+import {useContext, useEffect, useState} from 'react';
+import {appID, baseUrl} from '../utils/variables';
+import axios from 'axios';
+import {MainContext} from '../contexts/MainContext';
 
 // general function for fetching (options default value is empty object)
 const doFetch = async (url, options = {}) => {
@@ -17,12 +19,18 @@ const doFetch = async (url, options = {}) => {
   }
 };
 
-const useLoadMedia = () => {
+const useLoadMedia = (all = false, limit = 10) => {
   const [mediaArray, setMediaArray] = useState([]);
+  const {update} = useContext(MainContext);
 
   const loadMedia = async (limit = 10) => {
     try {
-      const json = await doFetch(baseUrl + 'media?limit=' + limit);
+      let json;
+      if (all) {
+        json = await doFetch(baseUrl + 'media?limit=' + limit);
+      } else {
+        json = await doFetch(baseUrl + 'tags/' + appID);
+      }
       const media = await Promise.all(
         json.map(async (item) => {
           const response = await fetch(baseUrl + 'media/' + item.file_id);
@@ -37,8 +45,11 @@ const useLoadMedia = () => {
   };
 
   useEffect(() => {
-    loadMedia(15);
-  }, []);
+    // load everything
+    // loadMedia(true, 15);
+    // load by appID
+    loadMedia();
+  }, [update]);
   return mediaArray;
 };
 
@@ -60,6 +71,21 @@ const useLogin = () => {
 };
 
 const useTag = () => {
+  const postTag = async (tag, token) => {
+    const options = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'x-access-token': token},
+      body: JSON.stringify(tag),
+    };
+    console.log('apihooks tag', options);
+    try {
+      const response = await doFetch(baseUrl + 'tags', options);
+      return response.data;
+    } catch (e) {
+      throw new Error('postTag error', e.message);
+    }
+  };
+
   const getFilesByTag = async (tag) => {
     try {
       const tagList = await doFetch(baseUrl + 'tags/' + tag);
@@ -68,7 +94,7 @@ const useTag = () => {
       throw new Error(error.message);
     }
   };
-  return {getFilesByTag};
+  return {getFilesByTag, postTag};
 };
 
 const useUser = () => {
@@ -115,4 +141,23 @@ const useUser = () => {
   return {postRegister, checkToken, checkIsUserAvailable};
 };
 
-export {useLoadMedia, useLogin, useUser, useTag};
+const useMedia = () => {
+  const upload = async (fd, token) => {
+    const options = {
+      method: 'POST',
+      headers: {'x-access-token': token},
+      data: fd,
+      url: baseUrl + 'media',
+    };
+    console.log('apihooks upload', options);
+    try {
+      const response = await axios(options);
+      return response.data;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  };
+  return {upload};
+};
+
+export {useLoadMedia, useLogin, useUser, useTag, useMedia};

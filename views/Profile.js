@@ -23,7 +23,7 @@ const Profile = ({navigation}) => {
     const fetchAvatar = async () => {
       try {
         const avatarList = await getFilesByTag('avatar_' + user.user_id);
-        if (avatarList.lenght > 0) {
+        if (avatarList.length > 0) {
           setAvatar(uploadsUrl + avatarList.pop().filename);
         }
       } catch (error) {
@@ -49,7 +49,5 @@ const Profile = ({navigation}) => {
 
 Profile.propTypes = {
   navigation: PropTypes.object,
-  singleMedia: PropTypes.object,
-  route: PropTypes.object,
 };
 export default Profile;

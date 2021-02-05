@@ -84,4 +84,10 @@ export default StyleSheet.create({
     height: 100,
     flex: 1,
   },
+  uploadButton: {
+    padding: 14,
+    margin: 4,
+    flex: 4,
+    height: 30,
+  },
 });

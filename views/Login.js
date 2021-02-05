@@ -1,11 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Keyboard,
-  // KeyboardAvoidingView,
-  // Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
+  StyleSheet,
   View,
+  KeyboardAvoidingView,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
@@ -13,14 +12,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useUser} from '../hooks/ApiHooks';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
-import {StyleSheet} from 'react-native';
-import {Button, Card, Text} from 'react-native-elements';
+import {Card, ListItem, Text} from 'react-native-elements';
 
 const Login = ({navigation}) => {
-  const {isLoggedIn, setIsLoggedIn, setUser} = useContext(MainContext);
+  const {setIsLoggedIn, setUser} = useContext(MainContext);
   const [formToggle, setFormToggle] = useState(true);
-  console.log('isloggedIn?', isLoggedIn);
-  // props is needed for navigation
   const {checkToken} = useUser();
 
   const getToken = async () => {
@@ -29,11 +25,11 @@ const Login = ({navigation}) => {
     if (userToken) {
       try {
         const userData = await checkToken(userToken);
-        setUser(userData);
         setIsLoggedIn(true);
+        setUser(userData);
         navigation.navigate('Home');
       } catch (error) {
-        console.log('getToken check failed', error.messge);
+        console.log('token check failed', error.message);
       }
     }
   };
@@ -42,51 +38,74 @@ const Login = ({navigation}) => {
   }, []);
 
   return (
-    <ScrollView>
-      {/* <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >*/}
+    <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.form}>
-          {formToggle ? (
+        <View style={styles.inner}>
+          <View style={styles.appTitle}>
+            <Text h4>MyApp</Text>
+          </View>
+          <View style={styles.form}>
             <Card>
-              <LoginForm navigation={navigation} />
+              {formToggle ? (
+                <>
+                  <Card.Title h5>Login</Card.Title>
+                  <Card.Divider />
+                  <LoginForm navigation={navigation} />
+                </>
+              ) : (
+                <>
+                  <Card.Title h5>Register</Card.Title>
+                  <Card.Divider />
+                  <RegisterForm navigation={navigation} />
+                </>
+              )}
+              <ListItem
+                onPress={() => {
+                  setFormToggle(!formToggle);
+                }}
+              >
+                <ListItem.Content>
+                  <Text style={styles.text}>
+                    {formToggle
+                      ? 'No account? Register here.'
+                      : 'Already registered? Login here.'}
+                  </Text>
+                </ListItem.Content>
+                <ListItem.Chevron />
+              </ListItem>
             </Card>
-          ) : (
-            <Card>
-              <RegisterForm navigation={navigation} />
-            </Card>
-          )}
-          <Text>{formToggle ? 'no account?' : 'Already have account?'}</Text>
-          <Button
-            title={formToggle ? 'Register' : 'Login'}
-            onPress={() => {
-              setFormToggle(!formToggle);
-            }}
-          />
+          </View>
         </View>
       </TouchableWithoutFeedback>
-      {/* </KeyboardAvoidingView>*/}
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
-};
-
-Login.propTypes = {
-  navigation: PropTypes.object,
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+  },
+  inner: {
+    padding: 12,
+    flex: 1,
+    justifyContent: 'space-around',
   },
   appTitle: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   form: {
-    flex: 4,
-    justifyContent: 'center',
+    flex: 6,
+  },
+  text: {
+    alignSelf: 'center',
+    padding: 20,
   },
 });
+
+Login.propTypes = {
+  navigation: PropTypes.object,
+};
+
 export default Login;
