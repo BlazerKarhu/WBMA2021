@@ -1,33 +1,34 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, Alert, Platform, ScrollView} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import PropTypes from 'prop-types';
 import {Input, Text, Image, Button, Card} from 'react-native-elements';
 import useUploadForm from '../hooks/UploadHooks';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useMedia, useTag} from '../hooks/ApiHooks';
-import PropTypes from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
 import {appID} from '../utils/variables';
+import {Video} from 'expo-av';
 
 const Upload = ({navigation}) => {
   const [image, setImage] = useState(null);
-  const [fileType, setFileType] = useState('');
+  const [fileType, setFiletype] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const {upload} = useMedia();
-  const {update, setUpdate} = useContext(MainContext);
   const {postTag} = useTag();
+  const {update, setUpdate} = useContext(MainContext);
 
-  const {
-    handleInputChange,
-    inputs,
-    uploadErrors,
-    handleInputEnd,
-    reset,
-  } = useUploadForm();
+  const {handleInputChange, inputs, uploadErrors, reset} = useUploadForm();
 
   const doUpload = async () => {
     const formData = new FormData();
-    // add text formData
+    // add text to formData
     formData.append('title', inputs.title);
     formData.append('description', inputs.description);
     // add image to formData
@@ -52,7 +53,7 @@ const Upload = ({navigation}) => {
         },
         userToken
       );
-      console.log('postTag response', tagResponse);
+      console.log('posting app identifier', tagResponse);
       Alert.alert(
         'Upload',
         'File uploaded',
@@ -69,8 +70,8 @@ const Upload = ({navigation}) => {
         {cancelable: false}
       );
     } catch (error) {
+      Alert.alert('Upload', 'Failed');
       console.error(error);
-      Alert.alert('Upload', 'failed');
     } finally {
       setIsUploading(false);
     }
@@ -94,7 +95,7 @@ const Upload = ({navigation}) => {
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 0.5,
     };
     if (library) {
@@ -106,7 +107,8 @@ const Upload = ({navigation}) => {
     console.log(result);
 
     if (!result.cancelled) {
-      setFileType(result.type);
+      // console.log('pickImage result', result);
+      setFiletype(result.type);
       setImage(result.uri);
     }
   };
@@ -118,51 +120,57 @@ const Upload = ({navigation}) => {
 
   return (
     <ScrollView>
-      <Card>
-        <Text h4>Upload media file</Text>
-        {image && (
-          <Image
-            source={{uri: image}}
-            style={{width: '100%', height: undefined, aspectRatio: 4 / 3}}
+      <KeyboardAvoidingView behavior="position" enabled>
+        <Card>
+          <Text h4>Upload media file</Text>
+          {image && (
+            <>
+              {fileType === 'image' ? (
+                <Image
+                  source={{uri: image}}
+                  style={{width: '100%', height: undefined, aspectRatio: 1}}
+                />
+              ) : (
+                <Video
+                  source={{uri: image}}
+                  style={{width: '100%', height: '80%'}}
+                  useNativeControls={true}
+                  resizeMode="contain"
+                />
+              )}
+            </>
+          )}
+          <Input
+            placeholder="title"
+            value={inputs.title}
+            onChangeText={(txt) => handleInputChange('title', txt)}
+            errorMessage={uploadErrors.title}
           />
-        )}
-        <Input
-          placeholder="title"
-          value={inputs.title}
-          onChangeText={(txt) => handleInputChange('title', txt)}
-          onEndEditing={(event) => {
-            handleInputEnd('title', event.nativeEvent.text);
-          }}
-          errorMessage={uploadErrors.title}
-        />
-        <Input
-          placeholder="description"
-          value={inputs.description}
-          onChangeText={(txt) => handleInputChange('description', txt)}
-          onEndEditing={(event) => {
-            handleInputEnd('description', event.nativeEvent.text);
-          }}
-          errorMessage={uploadErrors.description}
-        />
-        <Button title="Choose from library" onPress={() => pickImage(true)} />
-        <Button title="Use camera" onPress={() => pickImage(false)} />
-        {isUploading && <ActivityIndicator size="large" color="blue" />}
-        <Button
-          title="Upload file"
-          onPress={() => doUpload()}
-          disabled={
-            uploadErrors.title !== null ||
-            uploadErrors.description !== null ||
-            image === null
-              ? true
-              : false
-          }
-        />
-        <Button title="Reset form" onPress={() => doReset()} />
-      </Card>
+          <Input
+            placeholder="description"
+            value={inputs.description}
+            onChangeText={(txt) => handleInputChange('description', txt)}
+            errorMessage={uploadErrors.description}
+          />
+          <Button title="Choose from library" onPress={() => pickImage(true)} />
+          <Button title="Use camera" onPress={() => pickImage(false)} />
+          {isUploading && <ActivityIndicator size="large" color="#0000ff" />}
+          <Button
+            title="Upload file"
+            onPress={doUpload}
+            disabled={
+              uploadErrors.title !== null ||
+              uploadErrors.description !== null ||
+              image === null
+            }
+          />
+          <Button title="Reset" onPress={doReset} />
+        </Card>
+      </KeyboardAvoidingView>
     </ScrollView>
   );
 };
+
 Upload.propTypes = {
   navigation: PropTypes.object,
 };

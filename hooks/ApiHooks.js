@@ -23,7 +23,7 @@ const useLoadMedia = (all = false, limit = 10) => {
   const [mediaArray, setMediaArray] = useState([]);
   const {update} = useContext(MainContext);
 
-  const loadMedia = async (limit = 10) => {
+  const loadMedia = async (all = false, limit = 10) => {
     try {
       let json;
       if (all) {
@@ -46,9 +46,9 @@ const useLoadMedia = (all = false, limit = 10) => {
 
   useEffect(() => {
     // load everything
-    // loadMedia(true, 15);
+    loadMedia(true, 15);
     // load by appID
-    loadMedia();
+    // loadMedia();
   }, [update]);
   return mediaArray;
 };
@@ -129,6 +129,19 @@ const useUser = () => {
     }
   };
 
+  const getUser = async (id, token) => {
+    const options = {
+      method: 'GET',
+      headers: {'x-access-token': token},
+    };
+    try {
+      const userData = await doFetch(baseUrl + 'users/' + id, options);
+      return userData;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
   const checkIsUserAvailable = async (username) => {
     try {
       const result = await doFetch(baseUrl + 'users/username/' + username);
@@ -138,7 +151,7 @@ const useUser = () => {
     }
   };
 
-  return {postRegister, checkToken, checkIsUserAvailable};
+  return {postRegister, checkToken, checkIsUserAvailable, getUser};
 };
 
 const useMedia = () => {
