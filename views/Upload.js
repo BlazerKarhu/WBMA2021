@@ -18,7 +18,7 @@ import {Video} from 'expo-av';
 
 const Upload = ({navigation}) => {
   const [image, setImage] = useState(null);
-  const [fileType, setFiletype] = useState('');
+  const [filetype, setFiletype] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const {upload} = useMedia();
   const {postTag} = useTag();
@@ -34,7 +34,7 @@ const Upload = ({navigation}) => {
     // add image to formData
     const filename = image.split('/').pop();
     const match = /\.(\w+)$/.exec(filename);
-    let type = match ? `${fileType}/${match[1]}` : fileType;
+    let type = match ? `${filetype}/${match[1]}` : filetype;
     if (type === 'image/jpg') type = 'image/jpeg';
     formData.append('file', {
       uri: image,
@@ -117,7 +117,6 @@ const Upload = ({navigation}) => {
     setImage(null);
     reset();
   };
-
   return (
     <ScrollView>
       <KeyboardAvoidingView behavior="position" enabled>
@@ -125,7 +124,7 @@ const Upload = ({navigation}) => {
           <Text h4>Upload media file</Text>
           {image && (
             <>
-              {fileType === 'image' ? (
+              {filetype === 'image' ? (
                 <Image
                   source={{uri: image}}
                   style={{width: '100%', height: undefined, aspectRatio: 1}}
@@ -133,9 +132,8 @@ const Upload = ({navigation}) => {
               ) : (
                 <Video
                   source={{uri: image}}
-                  style={{width: '100%', height: '80%'}}
+                  style={{width: '100%', height: undefined, aspectRatio: 1}}
                   useNativeControls={true}
-                  resizeMode="contain"
                 />
               )}
             </>

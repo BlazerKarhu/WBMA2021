@@ -41,6 +41,10 @@ const Profile = ({navigation}) => {
         <Card.Image size="large" square source={{uri: avatar}}></Card.Image>
         <Text>Name: {user.username}</Text>
         <Text>Email: {user.email}</Text>
+        <Button
+          title={'MyFiles'}
+          onPress={() => navigation.push('My Files')}
+        ></Button>
         <Button title={'logout'} onPress={logout}></Button>
       </Card>
     </SafeAreaView>

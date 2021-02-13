@@ -8,26 +8,36 @@ const constraints = {
     },
     length: {
       minimum: 3,
-      message: 'must be atleast 3 chars',
+      message: 'min length is 3 characters',
     },
   },
   description: {
+    presence: {
+      message: 'cannot be empty',
+    },
     length: {
-      minimum: 3,
-      message: 'must be atleast 3 chars',
+      minimum: 5,
+      message: 'min length is 5 characters',
     },
   },
 };
 
 const useUploadForm = (callback) => {
-  const [uploadErrors, setUploadErrors] = useState({});
   const [inputs, setInputs] = useState({
     title: '',
     description: '',
   });
+  const [uploadErrors, setUploadErrors] = useState({});
 
-  const handleInputEnd = (name, text) => {
-    if (text === '') text = null;
+  const handleInputChange = (name, text) => {
+    // console.log(name, text);
+    // console.log('inputs state', inputs);
+    setInputs((inputs) => {
+      return {
+        ...inputs,
+        [name]: text,
+      };
+    });
     const error = validator(name, text, constraints);
     setUploadErrors((uploadErrors) => {
       return {
@@ -35,39 +45,6 @@ const useUploadForm = (callback) => {
         [name]: error,
       };
     });
-  };
-
-  const handleInputChange = (name, text) => {
-    // console.log(name, text);
-    // console.log('inputs stat', inputs);
-    setInputs((inputs) => {
-      return {
-        ...inputs,
-        [name]: text,
-      };
-    });
-  };
-
-  const validateOnSend = () => {
-    const titleError = validator('title', inputs.title, constraints);
-    const descriptionError = validator(
-      'description',
-      inputs.description,
-      constraints
-    );
-
-    setUploadErrors((uploadErrors) => {
-      return {
-        ...uploadErrors,
-        username: titleError,
-        password: descriptionError,
-      };
-    });
-    if (titleError !== null || descriptionError !== null) {
-      return false;
-    }
-
-    return true;
   };
 
   const reset = () => {
@@ -80,10 +57,9 @@ const useUploadForm = (callback) => {
 
   return {
     handleInputChange,
-    handleInputEnd,
     inputs,
+    setInputs,
     uploadErrors,
-    validateOnSend,
     reset,
   };
 };
